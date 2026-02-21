@@ -10,8 +10,8 @@ class UserConfig {
   var validationErrorsByPath: [String: ValidationErrorType] = [:]
 
   let fileName = "config.json"
-  private let alertHandler: AlertHandler
-  private let fileManager: FileManager
+  let alertHandler: AlertHandler
+  let fileManager: FileManager
 
   init(
     alertHandler: AlertHandler = DefaultAlertHandler(),
@@ -22,8 +22,6 @@ class UserConfig {
     self.fileManager = fileManager
     self.configDirectory = configDirectory ?? Self.defaultDirectory()
   }
-
-  // MARK: - Public Interface
 
   func ensureAndLoad() {
     ensureValidConfigDirectory()
@@ -49,9 +47,9 @@ class UserConfig {
     return path
   }
 
-  private var configDirectory: String
+  var configDirectory: String
 
-  private func ensureValidConfigDirectory() {
+  func ensureValidConfigDirectory() {
     if !fileManager.fileExists(atPath: configDirectory) {
       do {
         try fileManager.createDirectory(
@@ -76,7 +74,7 @@ class UserConfig {
     fileManager.fileExists(atPath: path)
   }
 
-  private func ensureConfigFileExists() {
+  func ensureConfigFileExists() {
     guard !exists else { return }
 
     do {
@@ -86,7 +84,7 @@ class UserConfig {
     }
   }
 
-  private func bootstrapConfig() throws {
+  func bootstrapConfig() throws {
     guard let data = defaultConfig.data(using: .utf8) else {
       throw NSError(
         domain: "UserConfig",
@@ -97,13 +95,13 @@ class UserConfig {
     try writeFile(data: data)
   }
 
-  private func writeFile(data: Data) throws {
+  func writeFile(data: Data) throws {
     try data.write(to: url, options: .atomic)
   }
 
   // MARK: - Config Loading
 
-  private func loadConfig() {
+  func loadConfig() {
     guard exists else {
       root = emptyRoot
       validationErrors = []
@@ -122,7 +120,7 @@ class UserConfig {
 
   // MARK: - Error Handling
 
-  private func handleError(_ error: Error, critical: Bool) {
+  func handleError(_ error: Error, critical: Bool) {
     alertHandler.showAlert(
       style: critical ? .critical : .warning, message: "\(error)")
     if critical {
@@ -134,7 +132,7 @@ class UserConfig {
 
 // MARK: - Validation helpers
 extension UserConfig {
-  private func pathKey(_ path: [Int]) -> String { path.map(String.init).joined(separator: "/") }
+  func pathKey(_ path: [Int]) -> String { path.map(String.init).joined(separator: "/") }
 
   func setValidationErrors(_ errors: [ValidationError]) {
     validationErrors = errors
@@ -223,7 +221,7 @@ struct Action: Item, Codable, Equatable {
       return value
     }
   }
-  private enum CodingKeys: String, CodingKey { case key, type, label, value }
+  enum CodingKeys: String, CodingKey { case key, type, label, value }
 
   init(
     uiid: UUID = UUID(), key: String?, type: Type, label: String? = nil, value: String
@@ -278,7 +276,7 @@ struct Group: Item, Codable, Equatable {
       && lhs.globalShortcut == rhs.globalShortcut && lhs.actions == rhs.actions
   }
 
-  private enum CodingKeys: String, CodingKey {
+  enum CodingKeys: String, CodingKey {
     case key, type, label, actions
     case globalShortcut = "global_shortcut"
   }
@@ -330,7 +328,7 @@ enum ActionOrGroup: Codable, Equatable {
     }
   }
 
-  private enum CodingKeys: String, CodingKey {
+  enum CodingKeys: String, CodingKey {
     case key, type, value, actions, label
     case globalShortcut = "global_shortcut"
   }

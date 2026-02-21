@@ -18,12 +18,12 @@ struct KeyMapEntry: Hashable, Codable {
 /// Centralized key mapping system that replaces scattered hardcoded mappings
 enum KeyMaps {
   // Primary lookup tables; built once and cached
-  private static let dicts = Self.build()
+  static let dicts = Self.build()
   static let byCode: [UInt16: KeyMapEntry] = dicts.byCode
   static let byGlyph: [String: KeyMapEntry] = dicts.byGlyph
   static let byText: [String: KeyMapEntry] = dicts.byText
 
-  private static func build() -> (
+  static func build() -> (
     byCode: [UInt16: KeyMapEntry],
     byGlyph: [String: KeyMapEntry],
     byText: [String: KeyMapEntry]

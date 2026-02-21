@@ -2,7 +2,7 @@ import Kingfisher
 import SwiftUI
 
 enum Cheatsheet {
-  private static let iconSize = NSSize(width: 24, height: 24)
+  static let iconSize = NSSize(width: 24, height: 24)
 
   struct KeyBadge: SwiftUI.View {
     let key: String
@@ -23,8 +23,8 @@ enum Cheatsheet {
     let action: Action
     let indent: Int
 
-    private var showDetails: Bool { UserSettings.shared.cheatsheetShowDetails }
-    private var showIcons: Bool { UserSettings.shared.cheatsheetShowAppIcons }
+    var showDetails: Bool { UserSettings.shared.cheatsheetShowDetails }
+    var showIcons: Bool { UserSettings.shared.cheatsheetShowAppIcons }
 
     var body: some SwiftUI.View {
       HStack {
@@ -57,9 +57,9 @@ enum Cheatsheet {
     let group: Group
     let indent: Int
 
-    private var expand: Bool { UserSettings.shared.cheatsheetExpandGroups }
-    private var showDetails: Bool { UserSettings.shared.cheatsheetShowDetails }
-    private var showIcons: Bool { UserSettings.shared.cheatsheetShowAppIcons }
+    var expand: Bool { UserSettings.shared.cheatsheetExpandGroups }
+    var showDetails: Bool { UserSettings.shared.cheatsheetShowDetails }
+    var showIcons: Bool { UserSettings.shared.cheatsheetShowAppIcons }
 
     var body: some SwiftUI.View {
       VStack(alignment: .leading, spacing: 4) {
@@ -102,7 +102,7 @@ enum Cheatsheet {
 
   struct CheatsheetView: SwiftUI.View {
     @Environment(UserState.self) var userState
-    @State private var contentHeight: CGFloat = 0
+    @State var contentHeight: CGFloat = 0
 
     var maxHeight: CGFloat {
       if let screen = NSScreen.main {

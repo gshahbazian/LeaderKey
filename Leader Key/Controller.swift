@@ -19,7 +19,7 @@ class Controller {
 
   var window: MainWindow!
   var cheatsheetWindow: NSWindow!
-  private var cheatsheetTimer: Timer?
+  var cheatsheetTimer: Timer?
 
   var onActivate: (() -> Void)?
   var onDeactivate: (() -> Void)?
@@ -168,11 +168,11 @@ class Controller {
     }
   }
 
-  private func shouldRunGroupSequence(_ event: NSEvent) -> Bool {
+  func shouldRunGroupSequence(_ event: NSEvent) -> Bool {
     return shouldRunGroupSequenceWithModifiers(event.modifierFlags)
   }
 
-  private func shouldRunGroupSequenceWithModifiers(_ modifierFlags: NSEvent.ModifierFlags) -> Bool {
+  func shouldRunGroupSequenceWithModifiers(_ modifierFlags: NSEvent.ModifierFlags) -> Bool {
     switch UserSettings.shared.modifierKeys {
     case .controlGroupOptionSticky:
       return modifierFlags.contains(.control)
@@ -181,7 +181,7 @@ class Controller {
     }
   }
 
-  private func isInStickyMode(_ modifierFlags: NSEvent.ModifierFlags) -> Bool {
+  func isInStickyMode(_ modifierFlags: NSEvent.ModifierFlags) -> Bool {
     switch UserSettings.shared.modifierKeys {
     case .controlGroupOptionSticky:
       return modifierFlags.contains(.option)
@@ -190,7 +190,7 @@ class Controller {
     }
   }
 
-  internal func charForEvent(_ event: NSEvent) -> String? {
+  func charForEvent(_ event: NSEvent) -> String? {
     // 1. For special keys like Enter, always use the mapped glyph
     if let entry = KeyMaps.entry(for: event.keyCode) {
       if event.keyCode == KeyHelpers.enter.rawValue || event.keyCode == KeyHelpers.space.rawValue
@@ -219,7 +219,7 @@ class Controller {
     return entry.glyph
   }
 
-  private func positionCheatsheetWindow() {
+  func positionCheatsheetWindow() {
     guard let mainWindow = window, let cheatsheet = cheatsheetWindow else {
       return
     }
@@ -228,7 +228,7 @@ class Controller {
       mainWindow.cheatsheetOrigin(cheatsheetSize: cheatsheet.frame.size))
   }
 
-  private func showCheatsheet() {
+  func showCheatsheet() {
     if !window.hasCheatsheet {
       return
     }
@@ -236,7 +236,7 @@ class Controller {
     cheatsheetWindow?.orderFront(nil)
   }
 
-  private func scheduleCheatsheet() {
+  func scheduleCheatsheet() {
     cheatsheetTimer?.invalidate()
 
     cheatsheetTimer = Timer.scheduledTimer(
@@ -246,7 +246,7 @@ class Controller {
     }
   }
 
-  private func runGroup(_ group: Group) {
+  func runGroup(_ group: Group) {
     for groupOrAction in group.actions {
       switch groupOrAction {
       case .group(let group):
@@ -257,7 +257,7 @@ class Controller {
     }
   }
 
-  private func runAction(_ action: Action) {
+  func runAction(_ action: Action) {
     switch action.type {
     case .application:
       NSWorkspace.shared.openApplication(
@@ -279,11 +279,11 @@ class Controller {
     }
   }
 
-  private func clear() {
+  func clear() {
     userState.clear()
   }
 
-  private func openURL(_ action: Action) {
+  func openURL(_ action: Action) {
     guard let url = URL(string: action.value) else {
       showAlert(
         title: "Invalid URL", message: "Failed to parse URL: \(action.value)")
@@ -310,7 +310,7 @@ class Controller {
     }
   }
 
-  private func showAlert(title: String, message: String) {
+  func showAlert(title: String, message: String) {
     let alert = NSAlert()
     alert.messageText = title
     alert.informativeText = message

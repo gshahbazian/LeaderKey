@@ -21,7 +21,7 @@ class StatusItem {
   var handleEditConfig: (() -> Void)?
   var handleEditSettings: (() -> Void)?
 
-  private var launchAtLoginItem: NSMenuItem?
+  var launchAtLoginItem: NSMenuItem?
 
   func enable() {
     statusItem = NSStatusBar.system.statusItem(
@@ -146,7 +146,7 @@ class StatusItem {
     launchAtLoginItem?.state = service.status == .enabled ? .on : .off
   }
 
-  private func updateStatusItemAppearance() {
+  func updateStatusItemAppearance() {
     guard let button = statusItem?.button else { return }
 
     switch appearance {

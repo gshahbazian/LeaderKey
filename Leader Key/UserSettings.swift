@@ -4,9 +4,9 @@ import KeyboardShortcuts
 class UserSettings {
   static let shared = UserSettings()
 
-  private let fileManager: FileManager
-  private let directoryPath: String
-  private var filePath: String {
+  let fileManager: FileManager
+  let directoryPath: String
+  var filePath: String {
     (directoryPath as NSString).appendingPathComponent("settings.json")
   }
   var url: URL {
@@ -100,7 +100,7 @@ class UserSettings {
     }
   }
 
-  private func apply(_ json: [String: Any]) {
+  func apply(_ json: [String: Any]) {
     if let v = json["activation_shortcut"] as? String {
       activationShortcut = v
     }
@@ -202,7 +202,7 @@ class UserSettings {
     return KeyboardShortcuts.Shortcut(key, modifiers: modifiers)
   }
 
-  private func keyboardShortcutsKey(for name: String) -> KeyboardShortcuts.Key? {
+  func keyboardShortcutsKey(for name: String) -> KeyboardShortcuts.Key? {
     switch name {
     case "space": return .space
     case "enter", "return": return .return
@@ -231,7 +231,7 @@ class UserSettings {
     }
   }
 
-  private static let characterToKey: [String: KeyboardShortcuts.Key] = [
+  static let characterToKey: [String: KeyboardShortcuts.Key] = [
     "a": .a, "b": .b, "c": .c, "d": .d, "e": .e, "f": .f,
     "g": .g, "h": .h, "i": .i, "j": .j, "k": .k, "l": .l,
     "m": .m, "n": .n, "o": .o, "p": .p, "q": .q, "r": .r,

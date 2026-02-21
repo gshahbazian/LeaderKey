@@ -14,9 +14,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
   func applicationDidFinishLaunching(_: Notification) {
 
-    guard
-      ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != "1"
-    else { return }
+    guard ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != "1" else { return }
     guard !isRunningTests() else { return }
 
     NSApp.mainMenu = MainMenu()
@@ -28,6 +26,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     statusItem.handleAbout = {
       NSApp.orderFrontStandardAboutPanel(nil)
     }
+
     statusItem.handleReloadConfig = {
       self.config.reloadFromFile()
       self.registerGlobalShortcuts()
@@ -35,13 +34,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
       UserSettings.shared.applyActivationShortcut()
       self.controller.showReloadFeedback()
     }
+
     statusItem.handleRevealConfig = {
       let dirURL = URL(fileURLWithPath: UserConfig.defaultDirectory(), isDirectory: true)
       NSWorkspace.shared.activateFileViewerSelecting([dirURL])
     }
+
     statusItem.handleEditConfig = {
       NSWorkspace.shared.open(self.config.url)
     }
+
     statusItem.handleEditSettings = {
       NSWorkspace.shared.open(UserSettings.shared.url)
     }
@@ -81,7 +83,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
   }
 
-  public func registerGlobalShortcuts() {
+  func registerGlobalShortcuts() {
     KeyboardShortcuts.removeAllHandlers()
 
     KeyboardShortcuts.onKeyDown(for: .activate) {
@@ -126,7 +128,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     return true
   }
 
-  private func processKeys(_ keys: [String], execute: Bool = true) {
+  func processKeys(_ keys: [String], execute: Bool = true) {
     guard !keys.isEmpty else { return }
 
     controller.handleKey(keys[0], execute: execute)

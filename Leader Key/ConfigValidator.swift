@@ -27,7 +27,7 @@ class ConfigValidator {
     return errors
   }
 
-  private static func validateGroup(_ group: Group, path: [Int], errors: inout [ValidationError]) {
+  static func validateGroup(_ group: Group, path: [Int], errors: inout [ValidationError]) {
     // Check if the group key is valid (if not root level)
     if !path.isEmpty {
       validateKey(group.key, at: path, errors: &errors)
@@ -80,7 +80,7 @@ class ConfigValidator {
     }
   }
 
-  private static func validateKey(_ key: String?, at path: [Int], errors: inout [ValidationError]) {
+  static func validateKey(_ key: String?, at path: [Int], errors: inout [ValidationError]) {
     guard let key = key else {
       errors.append(
         ValidationError(

@@ -72,7 +72,7 @@ struct AppIconImage: View {
       .frame(width: size.width, height: size.height)
   }
 
-  private func getAppIcon(path: String) -> NSImage? {
+  func getAppIcon(path: String) -> NSImage? {
     guard FileManager.default.fileExists(atPath: path) else {
       return nil
     }
