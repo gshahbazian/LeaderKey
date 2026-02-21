@@ -11,7 +11,7 @@ enum Breadcrumbs {
         controller: controller,
         contentRect: NSRect(x: 0, y: 0, width: 0, height: 0))
 
-      let view = MainView().environmentObject(self.controller.userState)
+      let view = MainView().environment(self.controller.userState)
       contentView = NSHostingView(rootView: view)
     }
 
@@ -69,7 +69,7 @@ enum Breadcrumbs {
   }
 
   struct MainView: View {
-    @EnvironmentObject var userState: UserState
+    @Environment(UserState.self) var userState
 
     var breadcrumbPath: [String] {
       return userState.navigationPath.map(\.displayName)
@@ -90,14 +90,14 @@ enum Breadcrumbs {
         } else {
           ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 4) {
-              ForEach(0..<breadcrumbPath.count, id: \.self) { index in
+              ForEach(Array(breadcrumbPath.enumerated()), id: \.offset) { index, name in
                 if index > 0 {
                   Image(systemName: "chevron.right")
                     .font(.system(size: 10))
                     .foregroundStyle(.secondary)
                 }
 
-                let text = Text(breadcrumbPath[index])
+                let text = Text(name)
                   .lineLimit(1)
                   .truncationMode(.middle)
 

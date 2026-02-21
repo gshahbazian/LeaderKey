@@ -101,7 +101,7 @@ enum Cheatsheet {
   }
 
   struct CheatsheetView: SwiftUI.View {
-    @EnvironmentObject var userState: UserState
+    @Environment(UserState.self) var userState
     @State private var contentHeight: CGFloat = 0
 
     var maxHeight: CGFloat {
@@ -179,7 +179,7 @@ enum Cheatsheet {
   }
 
   static func createWindow(for userState: UserState) -> NSWindow {
-    let view = CheatsheetView().environmentObject(userState)
+    let view = CheatsheetView().environment(userState)
     let controller = NSHostingController(rootView: view)
     let cheatsheet = PanelWindow(
       contentRect: NSRect(x: 0, y: 0, width: 580, height: 640)
@@ -192,6 +192,6 @@ enum Cheatsheet {
 struct CheatsheetView_Previews: PreviewProvider {
   static var previews: some View {
     Cheatsheet.CheatsheetView()
-      .environmentObject(UserState(userConfig: UserConfig()))
+      .environment(UserState(userConfig: UserConfig()))
   }
 }

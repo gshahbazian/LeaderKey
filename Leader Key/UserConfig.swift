@@ -1,13 +1,13 @@
 import Cocoa
-import Combine
 
 let emptyRoot = Group(key: "🚫", label: "Config error", actions: [])
 
-class UserConfig: ObservableObject {
-  @Published var root = emptyRoot
-  @Published var validationErrors: [ValidationError] = []
+@Observable
+class UserConfig {
+  var root = emptyRoot
+  var validationErrors: [ValidationError] = []
   // O(1) lookup for row validation; keys are path strings like "1/0/3"
-  @Published var validationErrorsByPath: [String: ValidationErrorType] = [:]
+  var validationErrorsByPath: [String: ValidationErrorType] = [:]
 
   let fileName = "config.json"
   private let alertHandler: AlertHandler

@@ -1,12 +1,13 @@
 import Foundation
 import SwiftUI
 
-final class UserState: ObservableObject {
+@Observable
+final class UserState {
   var userConfig: UserConfig!
 
-  @Published var display: String?
-  @Published var isShowingRefreshState: Bool
-  @Published var navigationPath: [Group] = []
+  var display: String?
+  var isShowingRefreshState: Bool
+  var navigationPath: [Group] = []
 
   var currentGroup: Group? {
     return navigationPath.last

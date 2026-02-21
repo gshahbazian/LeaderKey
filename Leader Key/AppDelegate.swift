@@ -4,9 +4,7 @@ import SwiftUI
 import UserNotifications
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate,
-  UNUserNotificationCenterDelegate
-{
+class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
   var controller: Controller!
 
   let statusItem = StatusItem()
