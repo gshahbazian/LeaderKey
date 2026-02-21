@@ -58,12 +58,12 @@ The status item menu provides:
 
 ## Code Style Guidelines
 
-- **Imports**: Group Foundation/AppKit imports first, then third-party libraries (Combine, Defaults, KeyboardShortcuts)
+- **Imports**: Group Foundation/AppKit imports first, then third-party libraries (KeyboardShortcuts)
 - **Naming**: Use descriptive camelCase for variables/functions, PascalCase for types
 - **Types**: Use explicit type annotations for public properties and parameters
 - **Error Handling**: Use appropriate error handling with do/catch blocks and alerts
 - **Extensions**: Create extensions for additional functionality on existing types
-- **State Management**: Use @Published and ObservableObject for reactive UI updates
+- **State Management**: Use @Observable macro for reactive UI updates
 - **Testing**: Create separate test cases with descriptive names, use XCTAssert\* methods
 - **Access Control**: Use appropriate access modifiers (private, fileprivate, internal)
 - **Documentation**: Use comments for complex logic or non-obvious implementations
