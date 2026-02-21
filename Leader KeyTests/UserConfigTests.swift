@@ -107,6 +107,81 @@ final class UserConfigTests: XCTestCase {
     XCTAssertEqual(testAlertManager.shownAlerts.count, 0)
   }
 
+  func testParsesGlobalShortcutOnGroup() throws {
+    let json = """
+      {
+        "actions": [
+          {
+            "key": "o",
+            "type": "group",
+            "label": "Open",
+            "global_shortcut": "control+o",
+            "actions": [
+              { "key": "s", "type": "application", "value": "/Applications/Safari.app" }
+            ]
+          },
+          {
+            "key": "a",
+            "type": "group",
+            "actions": [
+              { "key": "t", "type": "application", "value": "/Applications/Terminal.app" }
+            ]
+          }
+        ]
+      }
+      """
+
+    try json.write(to: subject.url, atomically: true, encoding: .utf8)
+    subject.ensureAndLoad()
+    waitForConfigLoad()
+
+    // First group has globalShortcut
+    if case .group(let group) = subject.root.actions[0] {
+      XCTAssertEqual(group.globalShortcut, "control+o")
+    } else {
+      XCTFail("Expected first action to be a group")
+    }
+
+    // Second group has no globalShortcut
+    if case .group(let group) = subject.root.actions[1] {
+      XCTAssertNil(group.globalShortcut)
+    } else {
+      XCTFail("Expected second action to be a group")
+    }
+  }
+
+  func testGlobalShortcutRoundTrips() throws {
+    let json = """
+      {
+        "actions": [
+          {
+            "key": "o",
+            "type": "group",
+            "global_shortcut": "command+shift+o",
+            "actions": [
+              { "key": "s", "type": "application", "value": "/Applications/Safari.app" }
+            ]
+          }
+        ]
+      }
+      """
+
+    try json.write(to: subject.url, atomically: true, encoding: .utf8)
+    subject.ensureAndLoad()
+    waitForConfigLoad()
+
+    // Save and reload
+    subject.saveConfig()
+    subject.reloadFromFile()
+    waitForConfigLoad()
+
+    if case .group(let group) = subject.root.actions[0] {
+      XCTAssertEqual(group.globalShortcut, "command+shift+o")
+    } else {
+      XCTFail("Expected first action to be a group")
+    }
+  }
+
   private func waitForConfigLoad() {
     let expectation = expectation(description: "config load flush")
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {

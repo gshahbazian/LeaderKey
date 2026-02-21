@@ -16,7 +16,6 @@
 		427C17F22BD311B500955B98 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 427C17F12BD311B500955B98 /* Preview Assets.xcassets */; };
 		427C17FD2BD311B500955B98 /* UserConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427C17FC2BD311B500955B98 /* UserConfigTests.swift */; };
 		427C18172BD311ED00955B98 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 427C18162BD311ED00955B98 /* KeyboardShortcuts */; };
-		427C181A2BD3123C00955B98 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 427C18192BD3123C00955B98 /* Defaults */; };
 		427C181C2BD314B500955B98 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427C181B2BD314B500955B98 /* Constants.swift */; };
 		427C18202BD31C3D00955B98 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427C181F2BD31C3D00955B98 /* AppDelegate.swift */; };
 		427C18292BD31E2E00955B98 /* MainWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427C18252BD31E2E00955B98 /* MainWindow.swift */; };
@@ -90,7 +89,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				42CCB5A32DAD257700356FC0 /* Kingfisher in Frameworks */,
-				427C181A2BD3123C00955B98 /* Defaults in Frameworks */,
 				427C18172BD311ED00955B98 /* KeyboardShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -211,7 +209,6 @@
 			name = "Leader Key";
 			packageProductDependencies = (
 				427C18162BD311ED00955B98 /* KeyboardShortcuts */,
-				427C18192BD3123C00955B98 /* Defaults */,
 				FBCA04D82D9F02F700271163 /* Kingfisher */,
 			);
 			productName = "Leader Key";
@@ -266,8 +263,7 @@
 			mainGroup = 427C17DE2BD311B400955B98;
 			packageReferences = (
 				427C18152BD311EC00955B98 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
-				427C18182BD3123C00955B98 /* XCRemoteSwiftPackageReference "Defaults" */,
-				4236321C2D6799B900878D92 /* XCRemoteSwiftPackageReference "SwiftFormatPlugins" */,
+					4236321C2D6799B900878D92 /* XCRemoteSwiftPackageReference "SwiftFormatPlugins" */,
 				FB00D5262D824E2C00A37486 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			productRefGroup = 427C17E82BD311B400955B98 /* Products */;
@@ -659,15 +655,7 @@
 				minimumVersion = 2.0.0;
 			};
 		};
-		427C18182BD3123C00955B98 /* XCRemoteSwiftPackageReference "Defaults" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sindresorhus/Defaults";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 9.0.1;
-			};
-		};
-		FB00D5262D824E2C00A37486 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			FB00D5262D824E2C00A37486 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
 			requirement = {
@@ -688,12 +676,7 @@
 			package = 427C18152BD311EC00955B98 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
 			productName = KeyboardShortcuts;
 		};
-		427C18192BD3123C00955B98 /* Defaults */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 427C18182BD3123C00955B98 /* XCRemoteSwiftPackageReference "Defaults" */;
-			productName = Defaults;
-		};
-		FBCA04D82D9F02F700271163 /* Kingfisher */ = {
+			FBCA04D82D9F02F700271163 /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = FB00D5262D824E2C00A37486 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;

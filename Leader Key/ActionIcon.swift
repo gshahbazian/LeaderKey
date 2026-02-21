@@ -1,31 +1,15 @@
-import Defaults
 import Kingfisher
 import SwiftUI
 
 func actionIcon(item: ActionOrGroup, iconSize: NSSize, loadFavicons: Bool = true) -> some View {
-  // Extract common properties
-  let (iconPath, type, value): (String?, Type?, String?) =
+  let (type, value): (Type?, String?) =
     switch item {
     case .action(let action):
-      (action.iconPath, action.type, action.value)
-    case .group(let group):
-      (group.iconPath, nil, nil)
+      (action.type, action.value)
+    case .group:
+      (nil, nil)
     }
 
-  // Handle custom icon path if present
-  if let iconPath = iconPath, !iconPath.isEmpty {
-    if iconPath.hasSuffix(".app") {
-      return AnyView(AppIconImage(appPath: iconPath, size: iconSize))
-    } else {
-      return AnyView(
-        Image(systemName: iconPath)
-          .foregroundStyle(.secondary)
-          .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
-      )
-    }
-  }
-
-  // Handle type-specific icons
   if let type = type {
     switch type {
     case .application:

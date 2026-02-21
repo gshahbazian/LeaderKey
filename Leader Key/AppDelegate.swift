@@ -1,5 +1,4 @@
 import Cocoa
-import Defaults
 import KeyboardShortcuts
 import SwiftUI
 import UserNotifications
@@ -79,16 +78,23 @@ class AppDelegate: NSObject, NSApplicationDelegate,
       self.activate()
     }
 
-    for groupKey in Defaults[.groupShortcuts] {
-      print("Registering shortcut for \(groupKey)")
-      KeyboardShortcuts.onKeyDown(for: KeyboardShortcuts.Name("group-\(groupKey)")) {
+    for case .group(let group) in config.root.actions {
+      guard let shortcutString = group.globalShortcut,
+        let shortcut = UserSettings.shared.parseShortcutString(shortcutString),
+        let groupKey = group.key
+      else { continue }
+
+      let name = KeyboardShortcuts.Name("group-\(groupKey)")
+      KeyboardShortcuts.setShortcut(shortcut, for: name)
+      KeyboardShortcuts.onKeyDown(for: name) {
         if !self.controller.window.isVisible {
           self.activate()
         }
         self.processKeys([groupKey])
       }
     }
-    if Defaults[.groupShortcuts].isEmpty && !KeyboardShortcuts.isEnabled(for: .activate) {
+
+    if !KeyboardShortcuts.isEnabled(for: .activate) {
       // No activation shortcut set — write default to settings
       UserSettings.shared.activationShortcut = "control+space"
       UserSettings.shared.applyActivationShortcut()

@@ -411,7 +411,6 @@ protocol Item {
   var type: Type { get }
   var label: String? { get }
   var displayName: String { get }
-  var iconPath: String? { get set }
 }
 
 struct Action: Item, Codable, Equatable {
@@ -422,7 +421,6 @@ struct Action: Item, Codable, Equatable {
   var type: Type
   var label: String?
   var value: String
-  var iconPath: String?
 
   var displayName: String {
     guard let labelValue = label else { return bestGuessDisplayName }
@@ -445,18 +443,16 @@ struct Action: Item, Codable, Equatable {
       return value
     }
   }
-  private enum CodingKeys: String, CodingKey { case key, type, label, value, iconPath }
+  private enum CodingKeys: String, CodingKey { case key, type, label, value }
 
   init(
-    uiid: UUID = UUID(), key: String?, type: Type, label: String? = nil, value: String,
-    iconPath: String? = nil
+    uiid: UUID = UUID(), key: String?, type: Type, label: String? = nil, value: String
   ) {
     self.uiid = uiid
     self.key = key
     self.type = type
     self.label = label
     self.value = value
-    self.iconPath = iconPath
   }
 
   init(from decoder: Decoder) throws {
@@ -466,7 +462,6 @@ struct Action: Item, Codable, Equatable {
     self.type = try c.decode(Type.self, forKey: .type)
     self.label = try c.decodeIfPresent(String.self, forKey: .label)
     self.value = try c.decode(String.self, forKey: .value)
-    self.iconPath = try c.decodeIfPresent(String.self, forKey: .iconPath)
   }
 
   func encode(to encoder: Encoder) throws {
@@ -479,7 +474,6 @@ struct Action: Item, Codable, Equatable {
     try c.encode(type, forKey: .type)
     try c.encode(value, forKey: .value)
     if let l = label, !l.isEmpty { try c.encode(l, forKey: .label) }
-    try c.encodeIfPresent(iconPath, forKey: .iconPath)
   }
 }
 
@@ -490,7 +484,7 @@ struct Group: Item, Codable, Equatable {
   var key: String?
   var type: Type = .group
   var label: String?
-  var iconPath: String?
+  var globalShortcut: String?
   var actions: [ActionOrGroup]
 
   var displayName: String {
@@ -501,19 +495,23 @@ struct Group: Item, Codable, Equatable {
 
   static func == (lhs: Group, rhs: Group) -> Bool {
     return lhs.key == rhs.key && lhs.type == rhs.type && lhs.label == rhs.label
-      && lhs.iconPath == rhs.iconPath && lhs.actions == rhs.actions
+      && lhs.globalShortcut == rhs.globalShortcut && lhs.actions == rhs.actions
   }
-  private enum CodingKeys: String, CodingKey { case key, type, label, iconPath, actions }
+
+  private enum CodingKeys: String, CodingKey {
+    case key, type, label, actions
+    case globalShortcut = "global_shortcut"
+  }
 
   init(
     uiid: UUID = UUID(), key: String?, type: Type = .group, label: String? = nil,
-    iconPath: String? = nil, actions: [ActionOrGroup]
+    globalShortcut: String? = nil, actions: [ActionOrGroup]
   ) {
     self.uiid = uiid
     self.key = key
     self.type = type
     self.label = label
-    self.iconPath = iconPath
+    self.globalShortcut = globalShortcut
     self.actions = actions
   }
 
@@ -523,7 +521,7 @@ struct Group: Item, Codable, Equatable {
     self.key = try c.decodeIfPresent(String.self, forKey: .key)
     self.type = .group
     self.label = try c.decodeIfPresent(String.self, forKey: .label)
-    self.iconPath = try c.decodeIfPresent(String.self, forKey: .iconPath)
+    self.globalShortcut = try c.decodeIfPresent(String.self, forKey: .globalShortcut)
     self.actions = try c.decode([ActionOrGroup].self, forKey: .actions)
   }
 
@@ -537,7 +535,7 @@ struct Group: Item, Codable, Equatable {
     try c.encode(Type.group, forKey: .type)
     try c.encode(actions, forKey: .actions)
     if let l = label, !l.isEmpty { try c.encode(l, forKey: .label) }
-    try c.encodeIfPresent(iconPath, forKey: .iconPath)
+    try c.encodeIfPresent(globalShortcut, forKey: .globalShortcut)
   }
 }
 
@@ -553,7 +551,8 @@ enum ActionOrGroup: Codable, Equatable {
   }
 
   private enum CodingKeys: String, CodingKey {
-    case key, type, value, actions, label, iconPath
+    case key, type, value, actions, label
+    case globalShortcut = "global_shortcut"
   }
 
   var uiid: UUID {
@@ -568,15 +567,16 @@ enum ActionOrGroup: Codable, Equatable {
     let key = try container.decode(String?.self, forKey: .key)
     let type = try container.decode(Type.self, forKey: .type)
     let label = try container.decodeIfPresent(String.self, forKey: .label)
-    let iconPath = try container.decodeIfPresent(String.self, forKey: .iconPath)
-
     switch type {
     case .group:
       let actions = try container.decode([ActionOrGroup].self, forKey: .actions)
-      self = .group(Group(key: key, label: label, iconPath: iconPath, actions: actions))
+      let globalShortcut = try container.decodeIfPresent(String.self, forKey: .globalShortcut)
+      self = .group(
+        Group(key: key, label: label, globalShortcut: globalShortcut, actions: actions)
+      )
     default:
       let value = try container.decode(String.self, forKey: .value)
-      self = .action(Action(key: key, type: type, label: label, value: value, iconPath: iconPath))
+      self = .action(Action(key: key, type: type, label: label, value: value))
     }
   }
 
@@ -596,7 +596,6 @@ enum ActionOrGroup: Codable, Equatable {
       if action.label != nil && !action.label!.isEmpty {
         try container.encodeIfPresent(action.label, forKey: .label)
       }
-      try container.encodeIfPresent(action.iconPath, forKey: .iconPath)
     case .group(let group):
       // Always encode key in textual form for JSON
       if let keyValue = group.key {
@@ -610,7 +609,7 @@ enum ActionOrGroup: Codable, Equatable {
       if group.label != nil && !group.label!.isEmpty {
         try container.encodeIfPresent(group.label, forKey: .label)
       }
-      try container.encodeIfPresent(group.iconPath, forKey: .iconPath)
+      try container.encodeIfPresent(group.globalShortcut, forKey: .globalShortcut)
     }
   }
 }

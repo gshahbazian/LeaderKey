@@ -1,24 +1,12 @@
 import Cocoa
-import Defaults
 
-var defaultsSuite =
-  ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-  ? UserDefaults(suiteName: UUID().uuidString)!
-  : .standard
-
-extension Defaults.Keys {
-  static let groupShortcuts = Key<Set<String>>(
-    "groupShortcuts",
-    default: Set(), suite: defaultsSuite)
-}
-
-enum AutoOpenCheatsheetSetting: String, Defaults.Serializable {
+enum AutoOpenCheatsheetSetting: String {
   case never
   case always
   case delay
 }
 
-enum ModifierKeyConfig: String, Codable, Defaults.Serializable, CaseIterable, Identifiable {
+enum ModifierKeyConfig: String, Codable, CaseIterable, Identifiable {
   case controlGroupOptionSticky
   case optionGroupControlSticky
 
@@ -34,13 +22,13 @@ enum ModifierKeyConfig: String, Codable, Defaults.Serializable, CaseIterable, Id
   }
 }
 
-enum ReactivateBehavior: String, Defaults.Serializable {
+enum ReactivateBehavior: String {
   case hide
   case reset
   case nothing
 }
 
-enum Screen: String, Defaults.Serializable {
+enum Screen: String {
   case primary
   case mouse
   case activeWindow
