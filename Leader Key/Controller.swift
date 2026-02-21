@@ -35,7 +35,7 @@ class Controller {
   func showReloadFeedback() {
     userState.isShowingRefreshState = true
     show()
-    delay(Int(Pulsate.singleDurationS * 1000) * 3) {
+    delay(Int(CursorBlink.singleDurationS * 1000) * 3) {
       self.hide()
       self.userState.isShowingRefreshState = false
     }

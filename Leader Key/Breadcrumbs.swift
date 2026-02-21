@@ -78,12 +78,12 @@ enum Breadcrumbs {
     var body: some View {
       HStack(spacing: 0) {
         if breadcrumbPath.isEmpty {
-          let text = Text("●")
-            .foregroundStyle(.secondary)
+          let text = Text(TerminalTheme.emptyIndicator)
+            .foregroundStyle(TerminalTheme.cursor)
             .padding(.horizontal, Breadcrumbs.padding)
 
           if userState.isShowingRefreshState {
-            text.pulsate()
+            text.cursorBlink()
           } else {
             text
           }
@@ -92,9 +92,9 @@ enum Breadcrumbs {
             HStack(spacing: 4) {
               ForEach(Array(breadcrumbPath.enumerated()), id: \.offset) { index, name in
                 if index > 0 {
-                  Image(systemName: "chevron.right")
-                    .font(.system(size: 10))
-                    .foregroundStyle(.secondary)
+                  Text(TerminalTheme.separator)
+                    .font(.system(size: 10, weight: .medium, design: .monospaced))
+                    .foregroundStyle(TerminalTheme.dim)
                 }
 
                 let text = Text(name)
@@ -102,7 +102,7 @@ enum Breadcrumbs {
                   .truncationMode(.middle)
 
                 if userState.isShowingRefreshState {
-                  text.pulsate()
+                  text.cursorBlink()
                 } else {
                   text
                 }
@@ -114,10 +114,9 @@ enum Breadcrumbs {
       }
       .frame(height: Breadcrumbs.dimension)
       .fixedSize(horizontal: true, vertical: true)
-      .font(.system(size: 14, weight: .medium, design: .rounded))
-      .background(
-        VisualEffectView(material: .hudWindow, blendingMode: .behindWindow)
-      )
+      .font(TerminalTheme.font)
+      .foregroundStyle(TerminalTheme.foreground)
+      .background(TerminalBackground())
     }
   }
 }

@@ -9,13 +9,12 @@ enum Cheatsheet {
 
     var body: some SwiftUI.View {
       Text(KeyMaps.glyph(for: key) ?? key)
-        .font(.system(.body, design: .rounded))
+        .font(TerminalTheme.badgeFont)
         .multilineTextAlignment(.center)
-        .fontWeight(.bold)
         .padding(.vertical, 4)
         .frame(width: 24)
-        .background(.white.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 5.0, style: .continuous))
+        .background(TerminalTheme.selectionBg)
+        .clipShape(Rectangle())
     }
   }
 
@@ -32,7 +31,7 @@ enum Cheatsheet {
           ForEach(0..<indent, id: \.self) { _ in
             Text("  ")
           }
-          KeyBadge(key: action.key ?? "●")
+          KeyBadge(key: action.key ?? TerminalTheme.emptyIndicator)
 
           if showIcons {
             actionIcon(item: ActionOrGroup.action(action), iconSize: iconSize)
@@ -45,7 +44,7 @@ enum Cheatsheet {
         Spacer()
         if showDetails {
           Text(action.value)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(TerminalTheme.secondary)
             .lineLimit(1)
             .truncationMode(.middle)
         }
@@ -73,15 +72,15 @@ enum Cheatsheet {
             actionIcon(item: ActionOrGroup.group(group), iconSize: iconSize)
           }
 
-          Image(systemName: "chevron.right")
-            .foregroundStyle(.secondary)
+          Text(TerminalTheme.groupIndicator)
+            .foregroundStyle(TerminalTheme.dim)
 
           Text(group.displayName)
 
           Spacer()
           if showDetails {
             Text("\(group.actions.count.description) item(s)")
-              .foregroundStyle(.secondary)
+              .foregroundStyle(TerminalTheme.secondary)
               .lineLimit(1)
               .truncationMode(.middle)
           }
@@ -134,10 +133,12 @@ enum Cheatsheet {
             HStack {
               KeyBadge(key: group.key ?? "•")
               Text(group.key == nil ? "Leader Key" : group.displayName)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(TerminalTheme.secondary)
             }
             .padding(.bottom, 8)
-            Divider()
+            Rectangle()
+              .fill(TerminalTheme.dim)
+              .frame(height: 1)
               .padding(.bottom, 8)
           }
 
@@ -162,9 +163,9 @@ enum Cheatsheet {
       }
       .frame(width: Cheatsheet.CheatsheetView.preferredWidth)
       .frame(height: min(contentHeight, maxHeight))
-      .background(
-        VisualEffectView(material: .hudWindow, blendingMode: .behindWindow)
-      )
+      .font(TerminalTheme.font)
+      .foregroundStyle(TerminalTheme.foreground)
+      .background(TerminalBackground())
       .onPreferenceChange(HeightPreferenceKey.self) { height in
         self.contentHeight = height
       }
