@@ -115,7 +115,9 @@ class Controller {
     }
   }
 
-  func handleKey(_ key: String, withModifiers modifiers: NSEvent.ModifierFlags? = nil, execute: Bool = true) {
+  func handleKey(
+    _ key: String, withModifiers modifiers: NSEvent.ModifierFlags? = nil, execute: Bool = true
+  ) {
     if key == "?" {
       showCheatsheet()
       return
@@ -156,7 +158,7 @@ class Controller {
           }
         }
       }
-      // If execute is false, just stay visible showing the matched action
+    // If execute is false, just stay visible showing the matched action
     case .group(let group):
       if execute, let mods = modifiers, shouldRunGroupSequenceWithModifiers(mods) {
         hide {
