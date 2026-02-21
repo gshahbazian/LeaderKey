@@ -263,7 +263,7 @@
 			mainGroup = 427C17DE2BD311B400955B98;
 			packageReferences = (
 				427C18152BD311EC00955B98 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
-					4236321C2D6799B900878D92 /* XCRemoteSwiftPackageReference "SwiftFormatPlugins" */,
+				4236321C2D6799B900878D92 /* XCRemoteSwiftPackageReference "SwiftFormatPlugins" */,
 				FB00D5262D824E2C00A37486 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			productRefGroup = 427C17E82BD311B400955B98 /* Products */;
@@ -502,7 +502,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = "Leader Key/Leader_Key.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Leader Key/Support/Leader_Key.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -539,7 +539,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = "Leader Key/Leader_Key.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Leader Key/Support/Leader_Key.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -655,7 +655,7 @@
 				minimumVersion = 2.0.0;
 			};
 		};
-			FB00D5262D824E2C00A37486 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+		FB00D5262D824E2C00A37486 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
 			requirement = {
@@ -676,7 +676,7 @@
 			package = 427C18152BD311EC00955B98 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
 			productName = KeyboardShortcuts;
 		};
-			FBCA04D82D9F02F700271163 /* Kingfisher */ = {
+		FBCA04D82D9F02F700271163 /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = FB00D5262D824E2C00A37486 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;

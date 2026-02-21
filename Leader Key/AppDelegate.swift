@@ -1,4 +1,5 @@
 import Cocoa
+import Combine
 import KeyboardShortcuts
 import SwiftUI
 import UserNotifications
@@ -11,6 +12,7 @@ class AppDelegate: NSObject, NSApplicationDelegate,
 
   let statusItem = StatusItem()
   let config = UserConfig()
+  private var configCancellable: AnyCancellable?
 
   var state: UserState!
 
@@ -32,6 +34,8 @@ class AppDelegate: NSObject, NSApplicationDelegate,
     }
     statusItem.handleReloadConfig = {
       self.config.reloadFromFile()
+      UserSettings.shared.load()
+      UserSettings.shared.applyActivationShortcut()
     }
     statusItem.handleRevealConfig = {
       let dirURL = URL(fileURLWithPath: UserConfig.defaultDirectory(), isDirectory: true)
@@ -52,6 +56,13 @@ class AppDelegate: NSObject, NSApplicationDelegate,
     // Apply activation shortcut from settings and register global shortcuts
     UserSettings.shared.applyActivationShortcut()
     registerGlobalShortcuts()
+
+    // Re-register when config reloads (async load or user reload)
+    configCancellable = config.$root
+      .dropFirst()
+      .sink { [weak self] root in
+        self?.registerGlobalShortcuts(root: root)
+      }
   }
 
   func activate() {
@@ -71,14 +82,15 @@ class AppDelegate: NSObject, NSApplicationDelegate,
     }
   }
 
-  public func registerGlobalShortcuts() {
+  public func registerGlobalShortcuts(root: Group? = nil) {
     KeyboardShortcuts.removeAllHandlers()
 
     KeyboardShortcuts.onKeyDown(for: .activate) {
       self.activate()
     }
 
-    for case .group(let group) in config.root.actions {
+    let actions = (root ?? config.root).actions
+    for case .group(let group) in actions {
       guard let shortcutString = group.globalShortcut,
         let shortcut = UserSettings.shared.parseShortcutString(shortcutString),
         let groupKey = group.key
