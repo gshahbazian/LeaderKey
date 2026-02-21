@@ -13,50 +13,15 @@ class UserSettings {
     URL(fileURLWithPath: filePath)
   }
 
-  // MARK: - Settings properties
-
-  var activationShortcut: String {
-    didSet {
-      if activationShortcut != oldValue {
-        save()
-        applyActivationShortcut()
-      }
-    }
-  }
-
-  var cheatsheetAutoOpen: AutoOpenCheatsheetSetting {
-    didSet { if cheatsheetAutoOpen != oldValue { save() } }
-  }
-
-  var cheatsheetDelayMS: Int {
-    didSet { if cheatsheetDelayMS != oldValue { save() } }
-  }
-
-  var cheatsheetExpandGroups: Bool {
-    didSet { if cheatsheetExpandGroups != oldValue { save() } }
-  }
-
-  var cheatsheetShowAppIcons: Bool {
-    didSet { if cheatsheetShowAppIcons != oldValue { save() } }
-  }
-
-  var cheatsheetShowFavicons: Bool {
-    didSet { if cheatsheetShowFavicons != oldValue { save() } }
-  }
-
-  var cheatsheetShowDetails: Bool {
-    didSet { if cheatsheetShowDetails != oldValue { save() } }
-  }
-
-  var reactivateBehavior: ReactivateBehavior {
-    didSet { if reactivateBehavior != oldValue { save() } }
-  }
-
-  var screen: Screen {
-    didSet { if screen != oldValue { save() } }
-  }
-
-  // MARK: - Init
+  var activationShortcut: String
+  var cheatsheetAutoOpen: AutoOpenCheatsheetSetting
+  var cheatsheetDelayMS: Int
+  var cheatsheetExpandGroups: Bool
+  var cheatsheetShowAppIcons: Bool
+  var cheatsheetShowFavicons: Bool
+  var cheatsheetShowDetails: Bool
+  var reactivateBehavior: ReactivateBehavior
+  var screen: Screen
 
   init(directoryPath: String? = nil, fileManager: FileManager = .default) {
     self.fileManager = fileManager
@@ -75,8 +40,6 @@ class UserSettings {
 
     load()
   }
-
-  // MARK: - Load
 
   func load() {
     guard fileManager.fileExists(atPath: filePath) else {
@@ -133,8 +96,6 @@ class UserSettings {
     }
   }
 
-  // MARK: - Save
-
   func save() {
     let json: [String: Any] = [
       "activation_shortcut": activationShortcut,
@@ -158,8 +119,6 @@ class UserSettings {
       print("Failed to save settings.json: \(error)")
     }
   }
-
-  // MARK: - Activation Shortcut
 
   func applyActivationShortcut() {
     guard let shortcut = parseShortcutString(activationShortcut) else {
@@ -233,8 +192,6 @@ class UserSettings {
     "`": .backtick, "[": .leftBracket, "]": .rightBracket,
   ]
 }
-
-// MARK: - Settings string conversions
 
 extension AutoOpenCheatsheetSetting {
   var settingsString: String {
