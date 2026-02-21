@@ -1,6 +1,5 @@
 import Cocoa
 import Combine
-import Defaults
 import SwiftUI
 
 enum KeyHelpers: UInt16 {
@@ -29,12 +28,7 @@ class Controller {
     self.userState = userState
     self.userConfig = userConfig
 
-    Task {
-      for await value in Defaults.updates(.theme) {
-        let windowClass = Theme.classFor(value)
-        self.window = await windowClass.init(controller: self)
-      }
-    }
+    self.window = Breadcrumbs.Window(controller: self)
 
     Events.sink { event in
       switch event {
@@ -57,7 +51,7 @@ class Controller {
   func show() {
     Events.send(.willActivate)
 
-    let screen = Defaults[.screen].getNSScreen() ?? NSScreen()
+    let screen = UserSettings.shared.screen.getNSScreen() ?? NSScreen()
     window.show(on: screen) {
       Events.send(.didActivate)
     }
@@ -66,7 +60,7 @@ class Controller {
       return
     }
 
-    switch Defaults[.autoOpenCheatsheet] {
+    switch UserSettings.shared.cheatsheetAutoOpen {
     case .always:
       showCheatsheet()
     case .delay:
@@ -90,18 +84,12 @@ class Controller {
 
   func keyDown(with event: NSEvent) {
     // Reset the delay timer
-    if Defaults[.autoOpenCheatsheet] == .delay {
+    if UserSettings.shared.cheatsheetAutoOpen == .delay {
       scheduleCheatsheet()
     }
 
     if event.modifierFlags.contains(.command) {
       switch event.charactersIgnoringModifiers {
-      case ",":
-        NSApp.sendAction(
-          #selector(AppDelegate.settingsMenuItemActionHandler(_:)), to: nil,
-          from: nil)
-        hide()
-        return
       case "w":
         hide()
         return
@@ -193,9 +181,7 @@ class Controller {
   }
 
   private func shouldRunGroupSequenceWithModifiers(_ modifierFlags: NSEvent.ModifierFlags) -> Bool {
-    let config = Defaults[.modifierKeyConfiguration]
-
-    switch config {
+    switch UserSettings.shared.modifierKeys {
     case .controlGroupOptionSticky:
       return modifierFlags.contains(.control)
     case .optionGroupControlSticky:
@@ -204,9 +190,7 @@ class Controller {
   }
 
   private func isInStickyMode(_ modifierFlags: NSEvent.ModifierFlags) -> Bool {
-    let config = Defaults[.modifierKeyConfiguration]
-
-    switch config {
+    switch UserSettings.shared.modifierKeys {
     case .controlGroupOptionSticky:
       return modifierFlags.contains(.option)
     case .optionGroupControlSticky:
@@ -215,17 +199,8 @@ class Controller {
   }
 
   internal func charForEvent(_ event: NSEvent) -> String? {
-    let forceEnglish = Defaults[.forceEnglishKeyboardLayout]
-
-    // 1. If the user forces English, or if the key is non-printable,
-    //    fall back to the hard-coded map.
-    if forceEnglish {
-      return englishGlyph(for: event)
-    }
-
-    // 2. For special keys like Enter, always use the mapped glyph
+    // 1. For special keys like Enter, always use the mapped glyph
     if let entry = KeyMaps.entry(for: event.keyCode) {
-      // For Enter, Space, Tab, arrows, etc. - use the glyph representation
       if event.keyCode == KeyHelpers.enter.rawValue || event.keyCode == KeyHelpers.space.rawValue
         || event.keyCode == KeyHelpers.tab.rawValue
         || event.keyCode == KeyHelpers.leftArrow.rawValue
@@ -237,7 +212,7 @@ class Controller {
       }
     }
 
-    // 3. Use the system-translated character for regular keys.
+    // 2. Use the system-translated character for regular keys.
     if let printable = event.charactersIgnoringModifiers,
       !printable.isEmpty,
       printable.unicodeScalars.first?.isASCII ?? false
@@ -245,18 +220,9 @@ class Controller {
       return printable  // already contains correct case
     }
 
-    // 4. For arrows, ␣, ⌫ … use map as last resort.
-    return englishGlyph(for: event)
-  }
-
-  private func englishGlyph(for event: NSEvent) -> String? {
+    // 3. For arrows, ␣, ⌫ … use map as last resort.
     guard let entry = KeyMaps.entry(for: event.keyCode) else {
       return event.charactersIgnoringModifiers
-    }
-    if entry.glyph.first?.isLetter == true && !entry.isReserved {
-      return event.modifierFlags.contains(.shift)
-        ? entry.glyph.uppercased()
-        : entry.glyph
     }
     return entry.glyph
   }
@@ -282,7 +248,7 @@ class Controller {
     cheatsheetTimer?.invalidate()
 
     cheatsheetTimer = Timer.scheduledTimer(
-      withTimeInterval: Double(Defaults[.cheatsheetDelayMS]) / 1000.0, repeats: false
+      withTimeInterval: Double(UserSettings.shared.cheatsheetDelayMS) / 1000.0, repeats: false
     ) { [weak self] _ in
       self?.showCheatsheet()
     }

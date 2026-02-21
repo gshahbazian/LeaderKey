@@ -6,46 +6,59 @@ This file provides guidance to coding agents when working with code in this repo
 
 ## Build & Test Commands
 
-- Build and run: `xcodebuild -scheme "Leader Key" -configuration Debug build`
-- Run all tests: `xcodebuild -scheme "Leader Key" -testPlan "TestPlan" test`
-- Run single test: `xcodebuild -scheme "Leader Key" -testPlan "TestPlan" -only-testing:Leader KeyTests/UserConfigTests/testInitializesWithDefaults test`
-- Bump version: `bin/bump`
-- Create release: `bin/release`
+- Debug build: `bin/debug-build.sh`
+- Release build: `bin/release-build.sh`
+- Run all tests: `bin/test.sh`
 
 ## Architecture Overview
 
-Leader Key is a macOS application that provides customizable keyboard shortcuts. The core architecture consists of:
+Leader Key is a macOS menu bar application that provides customizable keyboard shortcuts via a popup overlay. It runs as a background app (accessory activation policy) with no Settings window — all configuration is done via JSON files.
 
 **Key Components:**
 
-- `AppDelegate`: Application lifecycle, global shortcuts registration, update management
-- `Controller`: Central event handling, manages key sequences and window display
-- `UserConfig`: JSON configuration management with validation
+- `AppDelegate`: Application lifecycle, global shortcut registration via `KeyboardShortcuts`
+- `Controller`: Central event handling, manages key sequences, popup window, and cheatsheet display
+- `UserConfig`: Reads/writes `config.json` (key bindings tree) with validation and conflict detection
+- `UserSettings`: Reads/writes `settings.json` (app preferences) with typed properties and defaults
 - `UserState`: Tracks navigation through key sequences
-- `MainWindow`: Base class for theme windows
+- `StatusItem`: Menu bar icon and dropdown menu — the only persistent UI surface
+- `MainWindow`: Base class for the popup window (only `Breadcrumbs` theme is used)
 
-**Theme System:**
+**Configuration:**
 
-- Themes inherit from `MainWindow` and implement `draw()` method
-- Available themes: MysteryBox, Mini, Breadcrumbs, ForTheHorde, Cheater
-- Each theme provides different visual representations of shortcuts
+All configuration lives under `~/.config/leaderkey/`:
 
-**Configuration Flow:**
+| File | Purpose |
+|---|---|
+| `config.json` | Key bindings / action tree |
+| `settings.json` | App preferences (activation shortcut, cheatsheet behavior, modifier keys, etc.) |
 
-- Config stored at `~/Library/Application Support/Leader Key/config.json`
-- `FileMonitor` watches for changes and triggers reload
-- `ConfigValidator` ensures no key conflicts
+- `UserConfig` manages `config.json`: loading, saving, validation, file conflict detection
+- `UserSettings` manages `settings.json`: typed properties with sensible defaults, sparse/partial files supported
+- Both accept an injectable directory path in their initializer for testing
+- `ConfigValidator` ensures no duplicate key conflicts in the action tree
 - Actions support: applications, URLs, commands, folders
+
+**Menu Bar:**
+
+The status item menu provides:
+- About Leader Key
+- Launch at Login toggle (via `SMAppService` directly)
+- Edit Config / Edit Settings (opens files in default editor)
+- Reveal Config in Finder / Reload Config
+- Quit
 
 **Testing Architecture:**
 
-- Uses XCTest with custom `TestAlertManager` for UI testing
-- Tests use isolated UserDefaults and temporary directories
-- Focus on configuration validation and state management
+- Uses XCTest with custom `TestAlertManager` for alert assertions
+- Tests use isolated temporary directories injected via initializer parameters
+- `UserConfigTests`: Config loading, directory creation, parse errors, validation
+- `UserSettingsTests`: Default values, parsing, invalid value fallbacks, shortcut parsing, round-trip save/load
+- `ConfigValidatorTests`: Pure validation logic
 
 ## Code Style Guidelines
 
-- **Imports**: Group Foundation/AppKit imports first, then third-party libraries (Combine, Defaults)
+- **Imports**: Group Foundation/AppKit imports first, then third-party libraries (Combine, Defaults, KeyboardShortcuts)
 - **Naming**: Use descriptive camelCase for variables/functions, PascalCase for types
 - **Types**: Use explicit type annotations for public properties and parameters
 - **Error Handling**: Use appropriate error handling with do/catch blocks and alerts
@@ -56,4 +69,3 @@ Leader Key is a macOS application that provides customizable keyboard shortcuts.
 - **Documentation**: Use comments for complex logic or non-obvious implementations
 
 Follow Swift idioms and default formatting (4-space indentation, spaces around operators).
-

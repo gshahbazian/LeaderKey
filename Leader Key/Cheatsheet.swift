@@ -1,4 +1,3 @@
-import Defaults
 import Kingfisher
 import SwiftUI
 
@@ -23,8 +22,9 @@ enum Cheatsheet {
   struct ActionRow: SwiftUI.View {
     let action: Action
     let indent: Int
-    @Default(.showDetailsInCheatsheet) var showDetails
-    @Default(.showAppIconsInCheatsheet) var showIcons
+
+    private var showDetails: Bool { UserSettings.shared.cheatsheetShowDetails }
+    private var showIcons: Bool { UserSettings.shared.cheatsheetShowAppIcons }
 
     var body: some SwiftUI.View {
       HStack {
@@ -54,12 +54,12 @@ enum Cheatsheet {
   }
 
   struct GroupRow: SwiftUI.View {
-    @Default(.expandGroupsInCheatsheet) var expand
-    @Default(.showDetailsInCheatsheet) var showDetails
-    @Default(.showAppIconsInCheatsheet) var showIcons
-
     let group: Group
     let indent: Int
+
+    private var expand: Bool { UserSettings.shared.cheatsheetExpandGroups }
+    private var showDetails: Bool { UserSettings.shared.cheatsheetShowDetails }
+    private var showIcons: Bool { UserSettings.shared.cheatsheetShowAppIcons }
 
     var body: some SwiftUI.View {
       VStack(alignment: .leading, spacing: 4) {

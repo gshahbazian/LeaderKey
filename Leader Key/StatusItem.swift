@@ -1,6 +1,6 @@
 import Cocoa
 import Combine
-import Sparkle
+import ServiceManagement
 
 class StatusItem {
   enum Appearance {
@@ -17,11 +17,13 @@ class StatusItem {
   var statusItem: NSStatusItem?
   private var cancellables = Set<AnyCancellable>()
 
-  var handlePreferences: (() -> Void)?
   var handleAbout: (() -> Void)?
   var handleReloadConfig: (() -> Void)?
   var handleRevealConfig: (() -> Void)?
-  var handleCheckForUpdates: (() -> Void)?
+  var handleEditConfig: (() -> Void)?
+  var handleEditSettings: (() -> Void)?
+
+  private var launchAtLoginItem: NSMenuItem?
 
   func enable() {
     statusItem = NSStatusBar.system.statusItem(
@@ -48,38 +50,52 @@ class StatusItem {
 
     menu.addItem(NSMenuItem.separator())
 
-    // Settings
-    let preferencesItem = NSMenuItem(
-      title: "Settings…", action: #selector(showPreferences), keyEquivalent: ",")
-    preferencesItem.target = self
-    menu.addItem(preferencesItem)
-
-    menu.addItem(NSMenuItem.separator())
-
-    let checkForUpdatesItem = NSMenuItem(
-      title: "Check for Updates...", action: #selector(checkForUpdates),
+    // Launch at Login
+    let loginItem = NSMenuItem(
+      title: "Launch at Login", action: #selector(toggleLaunchAtLogin),
       keyEquivalent: ""
     )
-    checkForUpdatesItem.target = self
-    menu.addItem(checkForUpdatesItem)
+    loginItem.target = self
+    loginItem.state = SMAppService.mainApp.status == .enabled ? .on : .off
+    launchAtLoginItem = loginItem
+    menu.addItem(loginItem)
 
     menu.addItem(NSMenuItem.separator())
 
+    // Edit Config
+    let editConfigItem = NSMenuItem(
+      title: "Edit Config", action: #selector(editConfig),
+      keyEquivalent: ""
+    )
+    editConfigItem.target = self
+    menu.addItem(editConfigItem)
+
+    // Edit Settings
+    let editSettingsItem = NSMenuItem(
+      title: "Edit Settings", action: #selector(editSettings),
+      keyEquivalent: ""
+    )
+    editSettingsItem.target = self
+    menu.addItem(editSettingsItem)
+
+    // Reveal Config in Finder
     let revealConfigItem = NSMenuItem(
-      title: "Show config in Finder", action: #selector(revealConfigFile),
+      title: "Reveal Config in Finder", action: #selector(revealConfigFile),
       keyEquivalent: ""
     )
     revealConfigItem.target = self
     menu.addItem(revealConfigItem)
 
+    // Reload Config
     let reloadConfigItem = NSMenuItem(
-      title: "Reload config", action: #selector(reloadConfig), keyEquivalent: ""
+      title: "Reload Config", action: #selector(reloadConfig), keyEquivalent: ""
     )
     reloadConfigItem.target = self
     menu.addItem(reloadConfigItem)
 
     menu.addItem(NSMenuItem.separator())
 
+    // Quit
     menu.addItem(
       NSMenuItem(
         title: "Quit Leader Key",
@@ -113,10 +129,6 @@ class StatusItem {
     statusItem = nil
   }
 
-  @objc func showPreferences() {
-    handlePreferences?()
-  }
-
   @objc func showAbout() {
     handleAbout?()
   }
@@ -129,8 +141,26 @@ class StatusItem {
     handleRevealConfig?()
   }
 
-  @objc func checkForUpdates() {
-    handleCheckForUpdates?()
+  @objc func editConfig() {
+    handleEditConfig?()
+  }
+
+  @objc func editSettings() {
+    handleEditSettings?()
+  }
+
+  @objc func toggleLaunchAtLogin() {
+    let service = SMAppService.mainApp
+    do {
+      if service.status == .enabled {
+        try service.unregister()
+      } else {
+        try service.register()
+      }
+    } catch {
+      print("Failed to toggle launch at login: \(error)")
+    }
+    launchAtLoginItem?.state = service.status == .enabled ? .on : .off
   }
 
   private func updateStatusItemAppearance() {

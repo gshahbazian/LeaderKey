@@ -1,7 +1,6 @@
 import Cocoa
 import Combine
 import CryptoKit
-import Defaults
 
 let emptyRoot = Group(key: "🚫", label: "Config error", actions: [])
 
@@ -27,10 +26,12 @@ class UserConfig: ObservableObject {
 
   init(
     alertHandler: AlertHandler = DefaultAlertHandler(),
-    fileManager: FileManager = .default
+    fileManager: FileManager = .default,
+    configDirectory: String? = nil
   ) {
     self.alertHandler = alertHandler
     self.fileManager = fileManager
+    self.configDirectory = configDirectory ?? Self.defaultDirectory()
   }
 
   // MARK: - Public Interface
@@ -179,10 +180,8 @@ class UserConfig: ObservableObject {
   // MARK: - Directory Management
 
   static func defaultDirectory() -> String {
-    let appSupportDir = FileManager.default.urls(
-      for: .applicationSupportDirectory, in: .userDomainMask)[0]
-    let path = (appSupportDir.path as NSString).appendingPathComponent(
-      "Leader Key")
+    let home = NSHomeDirectory()
+    let path = (home as NSString).appendingPathComponent(".config/leaderkey")
     do {
       try FileManager.default.createDirectory(
         atPath: path, withIntermediateDirectories: true)
@@ -192,24 +191,23 @@ class UserConfig: ObservableObject {
     return path
   }
 
-  private func ensureValidConfigDirectory() {
-    let dir = Defaults[.configDir]
-    let defaultDir = Self.defaultDirectory()
+  private var configDirectory: String
 
-    if !fileManager.fileExists(atPath: dir) {
-      alertHandler.showAlert(
-        style: .warning,
-        message:
-          "Config directory does not exist: \(dir)\nResetting to default location."
-      )
-      Defaults[.configDir] = defaultDir
+  private func ensureValidConfigDirectory() {
+    if !fileManager.fileExists(atPath: configDirectory) {
+      do {
+        try fileManager.createDirectory(
+          atPath: configDirectory, withIntermediateDirectories: true)
+      } catch {
+        fatalError("Failed to create config directory: \(configDirectory)")
+      }
     }
   }
 
   // MARK: - File Operations
 
   var path: String {
-    (Defaults[.configDir] as NSString).appendingPathComponent(fileName)
+    (configDirectory as NSString).appendingPathComponent(fileName)
   }
 
   var url: URL {
