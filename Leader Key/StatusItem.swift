@@ -1,5 +1,4 @@
 import Cocoa
-import Combine
 import ServiceManagement
 
 class StatusItem {
@@ -15,7 +14,6 @@ class StatusItem {
   }
 
   var statusItem: NSStatusItem?
-  private var cancellables = Set<AnyCancellable>()
 
   var handleAbout: (() -> Void)?
   var handleReloadConfig: (() -> Void)?
@@ -105,26 +103,11 @@ class StatusItem {
     item.menu = menu
 
     updateStatusItemAppearance()
-
-    Events.sink { event in
-      switch event {
-      case .willActivate:
-        self.appearance = .active
-        break
-      case .willDeactivate:
-        self.appearance = .normal
-        break
-      default:
-        break
-      }
-    }.store(in: &cancellables)
-
   }
 
   func disable() {
     guard let item = statusItem else { return }
 
-    cancellables.removeAll()
     NSStatusBar.system.removeStatusItem(item)
     statusItem = nil
   }

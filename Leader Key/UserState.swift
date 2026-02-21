@@ -1,4 +1,3 @@
-import Combine
 import Foundation
 import SwiftUI
 
@@ -8,8 +7,6 @@ final class UserState: ObservableObject {
   @Published var display: String?
   @Published var isShowingRefreshState: Bool
   @Published var navigationPath: [Group] = []
-
-  private var configCancellable: AnyCancellable?
 
   var currentGroup: Group? {
     return navigationPath.last
@@ -24,12 +21,6 @@ final class UserState: ObservableObject {
     display = lastChar
     self.isShowingRefreshState = isShowingRefreshState
     self.navigationPath = []
-
-    // Forward config changes so SwiftUI views that observe UserState
-    // re-render when the config root updates (e.g. after async load).
-    configCancellable = userConfig?.objectWillChange.sink { [weak self] _ in
-      self?.objectWillChange.send()
-    }
   }
 
   func clear() {

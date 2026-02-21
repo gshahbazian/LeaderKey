@@ -1,5 +1,4 @@
 import Cocoa
-import Combine
 import KeyboardShortcuts
 import SwiftUI
 import UserNotifications
@@ -12,7 +11,6 @@ class AppDelegate: NSObject, NSApplicationDelegate,
 
   let statusItem = StatusItem()
   let config = UserConfig()
-  private var configCancellable: AnyCancellable?
 
   var state: UserState!
 
@@ -34,8 +32,10 @@ class AppDelegate: NSObject, NSApplicationDelegate,
     }
     statusItem.handleReloadConfig = {
       self.config.reloadFromFile()
+      self.registerGlobalShortcuts()
       UserSettings.shared.load()
       UserSettings.shared.applyActivationShortcut()
+      self.controller.showReloadFeedback()
     }
     statusItem.handleRevealConfig = {
       let dirURL = URL(fileURLWithPath: UserConfig.defaultDirectory(), isDirectory: true)
@@ -53,16 +53,17 @@ class AppDelegate: NSObject, NSApplicationDelegate,
     // Set activation policy to accessory (background app)
     NSApp.setActivationPolicy(.accessory)
 
+    // Wire up status item appearance to controller lifecycle
+    controller.onActivate = { [weak self] in
+      self?.statusItem.appearance = .active
+    }
+    controller.onDeactivate = { [weak self] in
+      self?.statusItem.appearance = .normal
+    }
+
     // Apply activation shortcut from settings and register global shortcuts
     UserSettings.shared.applyActivationShortcut()
     registerGlobalShortcuts()
-
-    // Re-register when config reloads (async load or user reload)
-    configCancellable = config.$root
-      .dropFirst()
-      .sink { [weak self] root in
-        self?.registerGlobalShortcuts(root: root)
-      }
   }
 
   func activate() {
@@ -82,14 +83,14 @@ class AppDelegate: NSObject, NSApplicationDelegate,
     }
   }
 
-  public func registerGlobalShortcuts(root: Group? = nil) {
+  public func registerGlobalShortcuts() {
     KeyboardShortcuts.removeAllHandlers()
 
     KeyboardShortcuts.onKeyDown(for: .activate) {
       self.activate()
     }
 
-    let actions = (root ?? config.root).actions
+    let actions = config.root.actions
     for case .group(let group) in actions {
       guard let shortcutString = group.globalShortcut,
         let shortcut = UserSettings.shared.parseShortcutString(shortcutString),
@@ -111,10 +112,6 @@ class AppDelegate: NSObject, NSApplicationDelegate,
       UserSettings.shared.activationShortcut = "control+space"
       UserSettings.shared.applyActivationShortcut()
     }
-  }
-
-  func applicationWillTerminate(_ notification: Notification) {
-    // Config saves automatically on changes
   }
 
   func show() {

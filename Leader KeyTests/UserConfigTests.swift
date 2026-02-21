@@ -46,7 +46,6 @@ final class UserConfigTests: XCTestCase {
 
   func testInitializesWithDefaults() throws {
     subject.ensureAndLoad()
-    waitForConfigLoad()
 
     XCTAssertNotEqual(subject.root, emptyRoot)
     XCTAssertTrue(subject.exists)
@@ -59,7 +58,6 @@ final class UserConfigTests: XCTestCase {
       alertHandler: testAlertManager, configDirectory: newDir)
 
     newSubject.ensureAndLoad()
-    waitForConfigLoad()
 
     XCTAssertTrue(FileManager.default.fileExists(atPath: newDir))
     XCTAssertTrue(newSubject.exists)
@@ -72,7 +70,6 @@ final class UserConfigTests: XCTestCase {
     try invalidJSON.write(to: subject.url, atomically: true, encoding: .utf8)
 
     subject.ensureAndLoad()
-    waitForConfigLoad()
 
     XCTAssertEqual(subject.root, emptyRoot)
     XCTAssertGreaterThan(testAlertManager.shownAlerts.count, 0)
@@ -95,13 +92,6 @@ final class UserConfigTests: XCTestCase {
     try json.write(to: subject.url, atomically: true, encoding: .utf8)
 
     subject.ensureAndLoad()
-    waitForConfigLoad()
-
-    XCTAssertFalse(subject.validationErrors.isEmpty)
-    XCTAssertEqual(testAlertManager.shownAlerts.count, 0)
-
-    testAlertManager.reset()
-    subject.saveConfig()
 
     XCTAssertFalse(subject.validationErrors.isEmpty)
     XCTAssertEqual(testAlertManager.shownAlerts.count, 0)
@@ -133,7 +123,6 @@ final class UserConfigTests: XCTestCase {
 
     try json.write(to: subject.url, atomically: true, encoding: .utf8)
     subject.ensureAndLoad()
-    waitForConfigLoad()
 
     // First group has globalShortcut
     if case .group(let group) = subject.root.actions[0] {
@@ -168,25 +157,14 @@ final class UserConfigTests: XCTestCase {
 
     try json.write(to: subject.url, atomically: true, encoding: .utf8)
     subject.ensureAndLoad()
-    waitForConfigLoad()
 
-    // Save and reload
-    subject.saveConfig()
+    // Reload and verify shortcut is preserved
     subject.reloadFromFile()
-    waitForConfigLoad()
 
     if case .group(let group) = subject.root.actions[0] {
       XCTAssertEqual(group.globalShortcut, "command+shift+o")
     } else {
       XCTFail("Expected first action to be a group")
     }
-  }
-
-  private func waitForConfigLoad() {
-    let expectation = expectation(description: "config load flush")
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-      expectation.fulfill()
-    }
-    self.wait(for: [expectation], timeout: 1.0)
   }
 }

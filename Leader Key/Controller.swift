@@ -1,5 +1,4 @@
 import Cocoa
-import Combine
 import SwiftUI
 
 enum KeyHelpers: UInt16 {
@@ -22,39 +21,31 @@ class Controller {
   var cheatsheetWindow: NSWindow!
   private var cheatsheetTimer: Timer?
 
-  private var cancellables = Set<AnyCancellable>()
+  var onActivate: (() -> Void)?
+  var onDeactivate: (() -> Void)?
 
   init(userState: UserState, userConfig: UserConfig) {
     self.userState = userState
     self.userConfig = userConfig
 
     self.window = Breadcrumbs.Window(controller: self)
-
-    Events.sink { event in
-      switch event {
-      case .didReload:
-        // This should all be handled by the themes
-        self.userState.isShowingRefreshState = true
-        self.show()
-        // Delay for 4 * 300ms to wait for animation to be noticeable
-        delay(Int(Pulsate.singleDurationS * 1000) * 3) {
-          self.hide()
-          self.userState.isShowingRefreshState = false
-        }
-      default: break
-      }
-    }.store(in: &cancellables)
-
     self.cheatsheetWindow = Cheatsheet.createWindow(for: userState)
   }
 
+  func showReloadFeedback() {
+    userState.isShowingRefreshState = true
+    show()
+    delay(Int(Pulsate.singleDurationS * 1000) * 3) {
+      self.hide()
+      self.userState.isShowingRefreshState = false
+    }
+  }
+
   func show() {
-    Events.send(.willActivate)
+    onActivate?()
 
     let screen = UserSettings.shared.screen.getNSScreen() ?? NSScreen()
-    window.show(on: screen) {
-      Events.send(.didActivate)
-    }
+    window.show(on: screen) {}
 
     if !window.hasCheatsheet || userState.isShowingRefreshState {
       return
@@ -70,12 +61,11 @@ class Controller {
   }
 
   func hide(afterClose: (() -> Void)? = nil) {
-    Events.send(.willDeactivate)
+    onDeactivate?()
 
     window.hide {
       self.clear()
       afterClose?()
-      Events.send(.didDeactivate)
     }
 
     cheatsheetWindow?.orderOut(nil)
