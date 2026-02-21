@@ -22,7 +22,6 @@ final class UserSettingsTests: XCTestCase {
     let settings = UserSettings(directoryPath: tempDir)
 
     XCTAssertEqual(settings.activationShortcut, "control+space")
-    XCTAssertEqual(settings.modifierKeys, .controlGroupOptionSticky)
     XCTAssertEqual(settings.cheatsheetAutoOpen, .delay)
     XCTAssertEqual(settings.cheatsheetDelayMS, 2000)
     XCTAssertEqual(settings.cheatsheetExpandGroups, false)
@@ -41,7 +40,6 @@ final class UserSettingsTests: XCTestCase {
     let settings = UserSettings(directoryPath: tempDir)
 
     XCTAssertEqual(settings.activationShortcut, "control+space")
-    XCTAssertEqual(settings.modifierKeys, .controlGroupOptionSticky)
     XCTAssertEqual(settings.cheatsheetAutoOpen, .delay)
     XCTAssertEqual(settings.cheatsheetDelayMS, 2000)
     XCTAssertEqual(settings.cheatsheetExpandGroups, false)
@@ -58,7 +56,6 @@ final class UserSettingsTests: XCTestCase {
     let json = """
       {
         "activation_shortcut": "command+shift+k",
-        "modifier_keys": "option_group_control_sticky",
         "cheatsheet": {
           "auto_open": "always",
           "delay_ms": 500,
@@ -77,7 +74,6 @@ final class UserSettingsTests: XCTestCase {
     let settings = UserSettings(directoryPath: tempDir)
 
     XCTAssertEqual(settings.activationShortcut, "command+shift+k")
-    XCTAssertEqual(settings.modifierKeys, .optionGroupControlSticky)
     XCTAssertEqual(settings.cheatsheetAutoOpen, .always)
     XCTAssertEqual(settings.cheatsheetDelayMS, 500)
     XCTAssertEqual(settings.cheatsheetExpandGroups, true)
@@ -112,7 +108,6 @@ final class UserSettingsTests: XCTestCase {
   func testInvalidEnumValuesFallbackToDefaults() throws {
     let json = """
       {
-        "modifier_keys": "invalid_value",
         "reactivate_behavior": "bogus",
         "screen": "unknown",
         "cheatsheet": {
@@ -125,7 +120,6 @@ final class UserSettingsTests: XCTestCase {
 
     let settings = UserSettings(directoryPath: tempDir)
 
-    XCTAssertEqual(settings.modifierKeys, .controlGroupOptionSticky)
     XCTAssertEqual(settings.reactivateBehavior, .hide)
     XCTAssertEqual(settings.screen, .primary)
     XCTAssertEqual(settings.cheatsheetAutoOpen, .delay)
@@ -199,7 +193,6 @@ final class UserSettingsTests: XCTestCase {
   func testRoundTripAllSettings() {
     let settings = UserSettings(directoryPath: tempDir)
     settings.activationShortcut = "option+space"
-    settings.modifierKeys = .optionGroupControlSticky
     settings.cheatsheetAutoOpen = .always
     settings.cheatsheetDelayMS = 1500
     settings.cheatsheetExpandGroups = true
@@ -212,7 +205,6 @@ final class UserSettingsTests: XCTestCase {
 
     let reloaded = UserSettings(directoryPath: tempDir)
     XCTAssertEqual(reloaded.activationShortcut, "option+space")
-    XCTAssertEqual(reloaded.modifierKeys, .optionGroupControlSticky)
     XCTAssertEqual(reloaded.cheatsheetAutoOpen, .always)
     XCTAssertEqual(reloaded.cheatsheetDelayMS, 1500)
     XCTAssertEqual(reloaded.cheatsheetExpandGroups, true)

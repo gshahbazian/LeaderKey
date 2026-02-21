@@ -24,10 +24,6 @@ class UserSettings {
     }
   }
 
-  var modifierKeys: ModifierKeyConfig {
-    didSet { if modifierKeys != oldValue { save() } }
-  }
-
   var cheatsheetAutoOpen: AutoOpenCheatsheetSetting {
     didSet { if cheatsheetAutoOpen != oldValue { save() } }
   }
@@ -68,7 +64,6 @@ class UserSettings {
 
     // Set defaults before loading
     self.activationShortcut = "control+space"
-    self.modifierKeys = .controlGroupOptionSticky
     self.cheatsheetAutoOpen = .delay
     self.cheatsheetDelayMS = 2000
     self.cheatsheetExpandGroups = false
@@ -103,11 +98,6 @@ class UserSettings {
   func apply(_ json: [String: Any]) {
     if let v = json["activation_shortcut"] as? String {
       activationShortcut = v
-    }
-    if let v = json["modifier_keys"] as? String,
-      let parsed = ModifierKeyConfig.fromSettingsString(v)
-    {
-      modifierKeys = parsed
     }
     if let cheatsheet = json["cheatsheet"] as? [String: Any] {
       if let v = cheatsheet["auto_open"] as? String,
@@ -148,7 +138,6 @@ class UserSettings {
   func save() {
     let json: [String: Any] = [
       "activation_shortcut": activationShortcut,
-      "modifier_keys": modifierKeys.settingsString,
       "cheatsheet": [
         "auto_open": cheatsheetAutoOpen.settingsString,
         "delay_ms": cheatsheetDelayMS,
@@ -246,23 +235,6 @@ class UserSettings {
 }
 
 // MARK: - Settings string conversions
-
-extension ModifierKeyConfig {
-  var settingsString: String {
-    switch self {
-    case .controlGroupOptionSticky: return "control_group_option_sticky"
-    case .optionGroupControlSticky: return "option_group_control_sticky"
-    }
-  }
-
-  static func fromSettingsString(_ s: String) -> ModifierKeyConfig? {
-    switch s {
-    case "control_group_option_sticky": return .controlGroupOptionSticky
-    case "option_group_control_sticky": return .optionGroupControlSticky
-    default: return nil
-    }
-  }
-}
 
 extension AutoOpenCheatsheetSetting {
   var settingsString: String {

@@ -140,24 +140,14 @@ class Controller {
     switch hit {
     case .action(let action):
       if execute {
-        if let mods = modifiers, isInStickyMode(mods) {
-          runAction(action)
-        } else {
-          hide {
-            self.runAction(action)
-          }
+        hide {
+          self.runAction(action)
         }
       }
     // If execute is false, just stay visible showing the matched action
     case .group(let group):
-      if execute, let mods = modifiers, shouldRunGroupSequenceWithModifiers(mods) {
-        hide {
-          self.runGroup(group)
-        }
-      } else {
-        userState.display = group.key
-        userState.navigateToGroup(group)
-      }
+      userState.display = group.key
+      userState.navigateToGroup(group)
     case .none:
       window.notFound()
     }
@@ -165,28 +155,6 @@ class Controller {
     // Why do we need to wait here?
     delay(1) {
       self.positionCheatsheetWindow()
-    }
-  }
-
-  func shouldRunGroupSequence(_ event: NSEvent) -> Bool {
-    return shouldRunGroupSequenceWithModifiers(event.modifierFlags)
-  }
-
-  func shouldRunGroupSequenceWithModifiers(_ modifierFlags: NSEvent.ModifierFlags) -> Bool {
-    switch UserSettings.shared.modifierKeys {
-    case .controlGroupOptionSticky:
-      return modifierFlags.contains(.control)
-    case .optionGroupControlSticky:
-      return modifierFlags.contains(.option)
-    }
-  }
-
-  func isInStickyMode(_ modifierFlags: NSEvent.ModifierFlags) -> Bool {
-    switch UserSettings.shared.modifierKeys {
-    case .controlGroupOptionSticky:
-      return modifierFlags.contains(.option)
-    case .optionGroupControlSticky:
-      return modifierFlags.contains(.control)
     }
   }
 
@@ -243,17 +211,6 @@ class Controller {
       withTimeInterval: Double(UserSettings.shared.cheatsheetDelayMS) / 1000.0, repeats: false
     ) { [weak self] _ in
       self?.showCheatsheet()
-    }
-  }
-
-  func runGroup(_ group: Group) {
-    for groupOrAction in group.actions {
-      switch groupOrAction {
-      case .group(let group):
-        runGroup(group)
-      case .action(let action):
-        runAction(action)
-      }
     }
   }
 
