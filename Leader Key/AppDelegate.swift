@@ -92,7 +92,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     let actions = config.root.actions
     for case .group(let group) in actions {
       guard let shortcutString = group.globalShortcut,
-        let shortcut = UserSettings.shared.parseShortcutString(shortcutString),
+        let shortcut = ShortcutParser.parse(shortcutString),
         let groupKey = group.key
       else { continue }
 

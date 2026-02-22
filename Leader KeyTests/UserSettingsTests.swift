@@ -128,8 +128,7 @@ final class UserSettingsTests: XCTestCase {
   // MARK: - Activation shortcut parsing
 
   func testParseControlSpace() {
-    let settings = UserSettings(directoryPath: tempDir)
-    let shortcut = settings.parseShortcutString("control+space")
+    let shortcut = ShortcutParser.parse("control+space")
 
     XCTAssertNotNil(shortcut)
     XCTAssertEqual(shortcut?.key, .space)
@@ -138,8 +137,7 @@ final class UserSettingsTests: XCTestCase {
   }
 
   func testParseCommandShiftK() {
-    let settings = UserSettings(directoryPath: tempDir)
-    let shortcut = settings.parseShortcutString("command+shift+k")
+    let shortcut = ShortcutParser.parse("command+shift+k")
 
     XCTAssertNotNil(shortcut)
     XCTAssertEqual(shortcut?.key, .k)
@@ -148,8 +146,7 @@ final class UserSettingsTests: XCTestCase {
   }
 
   func testParseOptionF12() {
-    let settings = UserSettings(directoryPath: tempDir)
-    let shortcut = settings.parseShortcutString("option+f12")
+    let shortcut = ShortcutParser.parse("option+f12")
 
     XCTAssertNotNil(shortcut)
     XCTAssertEqual(shortcut?.key, .f12)
@@ -157,8 +154,7 @@ final class UserSettingsTests: XCTestCase {
   }
 
   func testParseInvalidShortcut() {
-    let settings = UserSettings(directoryPath: tempDir)
-    let shortcut = settings.parseShortcutString("")
+    let shortcut = ShortcutParser.parse("")
     XCTAssertNil(shortcut)
   }
 

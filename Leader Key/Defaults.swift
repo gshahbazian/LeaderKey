@@ -1,5 +1,3 @@
-import Cocoa
-
 enum AutoOpenCheatsheetSetting: String, Codable {
   case never
   case always
