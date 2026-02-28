@@ -79,7 +79,8 @@ enum Cheatsheet {
 
           Spacer()
           if showDetails {
-            Text("\(group.actions.count.description) item(s)")
+            let itemCount = group.actions.count
+            Text("\(itemCount) \(itemCount == 1 ? "item" : "items")")
               .foregroundStyle(TerminalTheme.secondary)
               .lineLimit(1)
               .truncationMode(.middle)

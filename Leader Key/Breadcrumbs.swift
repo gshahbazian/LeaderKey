@@ -78,9 +78,11 @@ enum Breadcrumbs {
     var body: some View {
       HStack(spacing: 0) {
         if breadcrumbPath.isEmpty {
-          let text = Text(TerminalTheme.emptyIndicator)
-            .foregroundStyle(TerminalTheme.cursor)
+          let text = Rectangle()
+            .fill(TerminalTheme.cursor)
+            .frame(width: 10, height: 14)
             .padding(.horizontal, Breadcrumbs.padding)
+            .frame(maxHeight: .infinity, alignment: .center)
 
           if userState.isShowingRefreshState {
             text.cursorBlink()
