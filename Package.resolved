@@ -1,5 +1,5 @@
 {
-  "originHash" : "8202e29cad8ad796e564ed7e0d335c8722855f6f3f497ce19d929ddfcf26ed3f",
+  "originHash" : "92a255cd06f9a22d479a7be7b26d0e2b17251b0970ed9e223ee58633c8cbb9be",
   "pins" : [
     {
       "identity" : "keyboardshortcuts",
@@ -17,15 +17,6 @@
       "state" : {
         "revision" : "2015fda791daa72c8058619545a593bf8c1dd59f",
         "version" : "8.5.0"
-      }
-    },
-    {
-      "identity" : "swiftformatplugins",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/StarLard/SwiftFormatPlugins.git",
-      "state" : {
-        "revision" : "8b7fe1b899d82e1abbe4a88d7593645e06669467",
-        "version" : "1.1.1"
       }
     }
   ],

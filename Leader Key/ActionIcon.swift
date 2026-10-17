@@ -115,15 +115,3 @@ struct FavIconImage: View {
     }
   }
 }
-
-struct AppImagePreview: PreviewProvider {
-  static var previews: some View {
-    let appPaths = ["/Applications/Xcode.app", "/Applications/Safari.app", "/invalid/path"]
-    VStack {
-      ForEach(appPaths, id: \.self) { path in
-        AppIconImage(appPath: path)
-      }
-    }
-    .padding()
-  }
-}

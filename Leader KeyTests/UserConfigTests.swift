@@ -1,3 +1,4 @@
+import Cocoa
 import XCTest
 
 @testable import Leader_Key
@@ -7,13 +8,6 @@ class TestAlertManager: AlertHandler {
 
   func showAlert(style: NSAlert.Style, message: String) {
     shownAlerts.append((style: style, message: message))
-  }
-
-  func showAlert(
-    style: NSAlert.Style, message: String, informativeText: String, buttons: [String]
-  ) -> NSApplication.ModalResponse {
-    shownAlerts.append((style: style, message: message))
-    return .alertFirstButtonReturn
   }
 
   func reset() {

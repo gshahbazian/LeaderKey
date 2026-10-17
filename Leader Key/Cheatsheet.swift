@@ -190,10 +190,3 @@ enum Cheatsheet {
     return cheatsheet
   }
 }
-
-struct CheatsheetView_Previews: PreviewProvider {
-  static var previews: some View {
-    Cheatsheet.CheatsheetView()
-      .environment(UserState(userConfig: UserConfig()))
-  }
-}

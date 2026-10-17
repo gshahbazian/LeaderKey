@@ -1,10 +1,7 @@
 import Cocoa
 import KeyboardShortcuts
-import SwiftUI
-import UserNotifications
 
-@NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate {
   var controller: Controller!
 
   let statusItem = StatusItem()
@@ -13,9 +10,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
   var state: UserState!
 
   func applicationDidFinishLaunching(_: Notification) {
-    guard ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != "1" else { return }
-    guard !isRunningTests() else { return }
-
     NSApp.mainMenu = MainMenu()
 
     config.ensureAndLoad()
@@ -48,9 +42,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     statusItem.enable()
-
-    // Set activation policy to accessory (background app)
-    NSApp.setActivationPolicy(.accessory)
 
     // Wire up status item appearance to controller lifecycle
     controller.onActivate = { [weak self] in
@@ -119,12 +110,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
   func hide() {
     controller.hide()
-  }
-
-  func isRunningTests() -> Bool {
-    let environment = ProcessInfo.processInfo.environment
-    guard environment["XCTestSessionIdentifier"] != nil else { return false }
-    return true
   }
 
   func processKeys(_ keys: [String], execute: Bool = true) {

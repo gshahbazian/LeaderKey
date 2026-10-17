@@ -6,9 +6,21 @@ This file provides guidance to coding agents when working with code in this repo
 
 ## Build & Test Commands
 
-- Debug build: `bin/debug-build.sh`
-- Release build: `bin/release-build.sh`
-- Run all tests: `bin/test.sh`
+- Debug build: `swift build`
+- Release build: `swift build -c release`
+- Run all tests: `swift test`
+- Release app bundle: `scripts/bundle.sh`
+- Debug app bundle: `scripts/bundle.sh --debug`
+- Install and launch: `IDENTITY='Apple Development: Your Name (TEAMID)' scripts/install-local.sh`
+- Format: `swift format --parallel --in-place --recursive 'Leader Key' 'Leader KeyTests' Package.swift`
+- Lint: `swift format lint --parallel --strict --recursive 'Leader Key' 'Leader KeyTests' Package.swift`
+
+Swift Package Manager builds the executable and runs tests without launching the
+app. There is no Xcode project. Bundling uses `Resources/Info.plist`, compiles
+`Resources/Assets.xcassets` with `actool`, copies dependency resource bundles, and
+signs `build/Leader Key.app`. Bundling defaults to ad-hoc signing; set `IDENTITY`
+for certificate signing. `VERSION` and `BUILD` override the app's version numbers.
+The local installer requires `IDENTITY` and backs up any existing installed app.
 
 ## Architecture Overview
 
@@ -16,6 +28,7 @@ Leader Key is a macOS menu bar application that provides customizable keyboard s
 
 **Key Components:**
 
+- `LeaderKey`: Application entry point; creates and retains the delegate and runs the event loop
 - `AppDelegate`: Application lifecycle, global shortcut registration via `KeyboardShortcuts`
 - `Controller`: Central event handling, manages key sequences, popup window, and cheatsheet display
 - `UserConfig`: Reads/writes `config.json` (key bindings tree) with validation and conflict detection
@@ -51,6 +64,7 @@ The status item menu provides:
 **Testing Architecture:**
 
 - Uses XCTest with custom `TestAlertManager` for alert assertions
+- The `LeaderKeyTests` Swift package test target imports the `Leader_Key` executable target directly
 - Tests use isolated temporary directories injected via initializer parameters
 - `UserConfigTests`: Config loading, directory creation, parse errors, validation
 - `UserSettingsTests`: Default values, parsing, invalid value fallbacks, shortcut parsing, round-trip save/load
